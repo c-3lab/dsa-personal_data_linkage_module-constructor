@@ -1,0 +1,206 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DSA data linkage platform for personal data: create ecr repositories"
+
+Resources:
+# ------------------------------------------------------------
+#   ECR
+# ------------------------------------------------------------
+# create ECR repository for "pxr-access-control-manage-service"
+  PxrAccessControlManageService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-access-control-manage-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-access-control-service"
+  PxrAccessControlService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-access-control-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-binary-manage-service"
+  PxrBinaryManageService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-binary-manage-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-block-proxy-service"
+  PxrBlockProxyService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-block-proxy-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-book-manage-service"
+  PxrBookManageService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-book-manage-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-book-operate-service"
+  PxrBookOperateService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-book-operate-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-catalog-service"
+  PxrCatalogService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-catalog-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-catalog-update-service"
+  PxrCatalogUpdateService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-catalog-update-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-certificate-manage-service"
+  PxrCertificateManageService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-certificate-manage-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-certification-authority-service"
+  PxrCertificationAuthorityService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-certification-authority-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-ctoken-ledger-service"
+  PxrCtokenLedgerService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-ctoken-ledger-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-identity-verificate-service"
+  PxrIdentityVerificateService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-identity-verificate-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-local-ctoken-service"
+  PxrLocalCtokenService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-local-ctoken-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-notification-service"
+  PxrNotificationService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-notification-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# create ECR repository for "pxr-operator-service"
+  PxrOperatorService:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: "pxr-operator-service"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+
+# ------------------------------------------------------------#
+# Output Parameters
+# ------------------------------------------------------------#
+Outputs:
+  PxrAccessControlManageService:
+    Value: !Ref PxrAccessControlManageService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-access-control-manage-service"
+
+  PxrAccessControlService:
+    Value: !Ref PxrAccessControlService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-access-control-service"
+
+  PxrBinaryManageService:
+    Value: !Ref PxrBinaryManageService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-binary-manage-service"
+
+  PxrBlockProxyService:
+    Value: !Ref PxrBlockProxyService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-block-proxy-service"
+
+  PxrBookManageService:
+    Value: !Ref PxrBookManageService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-book-manage-service"
+
+  PxrBookOperateService:
+    Value: !Ref PxrBookOperateService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-book-operate-service"
+
+  PxrCatalogService:
+    Value: !Ref PxrCatalogService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-catalog-service"
+
+  PxrCatalogUpdateService:
+    Value: !Ref PxrCatalogUpdateService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-catalog-update-service"
+
+  PxrCertificateManageService:
+    Value: !Ref PxrCertificateManageService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-certificate-manage-service"
+
+  PxrCertificationAuthorityService:
+    Value: !Ref PxrCertificationAuthorityService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-certification-authority-service"
+
+  PxrCtokenLedgerService:
+    Value: !Ref PxrCtokenLedgerService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-ctoken-ledger-service"
+
+  PxrIdentityVerificateService:
+    Value: !Ref PxrIdentityVerificateService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-identity-verificate-service"
+
+  PxrLocalCtokenService:
+    Value: !Ref PxrLocalCtokenService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-local-ctoken-service"
+
+  PxrNotificationService:
+    Value: !Ref PxrNotificationService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-notification-service"
+
+  PxrOperatorService:
+    Value: !Ref PxrOperatorService
+    Export:
+      Name: !Sub "${AWS::StackName}-pxr-operator-service"
+
