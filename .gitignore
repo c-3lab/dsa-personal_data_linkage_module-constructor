@@ -1,0 +1,8 @@
+**/.node-version
+**/node_modules/
+**/logs
+
+cert
+src
+
+.DS_Store
