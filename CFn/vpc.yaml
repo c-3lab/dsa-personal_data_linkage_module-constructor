@@ -1,0 +1,435 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DSA data linkage platform for personal data: create a vpc, private and public subnets, a IGW, EIPs, NATGWs"
+
+Parameters:
+  EKSClusterName:
+    Type: String
+  VPCCIDR:
+    Type: String
+    Default: "10.0.0.0/16"
+  PublicSubnetACIDR:
+    Type: String
+    Default: "10.0.11.0/24"
+  PublicSubnetCCIDR:
+    Type: String
+    Default: "10.0.12.0/24"
+  PublicSubnetDCIDR:
+    Type: String
+    Default: "10.0.13.0/24"
+  PrivateSubnetACIDR:
+    Type: String
+    Default: "10.0.21.0/24"
+  PrivateSubnetCCIDR:
+    Type: String
+    Default: "10.0.22.0/24"
+  PrivateSubnetDCIDR:
+    Type: String
+    Default: "10.0.23.0/24"
+
+Resources:
+# ------------------------------------------------------------
+#   VPC
+# ------------------------------------------------------------
+# create a VPC
+  VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsSupport: "true"
+      EnableDnsHostnames: "true"
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-vpc"
+
+# ------------------------------------------------------------
+#   Subnet
+# ------------------------------------------------------------
+# create public subnets
+  PublicSubnetA:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1a"
+      CidrBlock: !Ref PublicSubnetACIDR
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-public-subnet-a"
+        - Key: !Sub kubernetes.io/cluster/${EKSClusterName}
+          Value: "owned"
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+
+  PublicSubnetC:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1c"
+      CidrBlock: !Ref PublicSubnetCCIDR
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-public-subnet-c"
+        - Key: !Sub kubernetes.io/cluster/${EKSClusterName}
+          Value: "owned"
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+
+  PublicSubnetD:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1d"
+      CidrBlock: !Ref PublicSubnetDCIDR
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-public-subnet-d"
+        - Key: !Sub kubernetes.io/cluster/${EKSClusterName}
+          Value: "owned"
+        - Key: kubernetes.io/role/elb
+          Value: "1"
+
+# create private subnets
+  PrivateSubnetA:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: "ap-northeast-1a"
+      CidrBlock: !Ref PrivateSubnetACIDR
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-private-subnet-a"
+        - Key: !Sub kubernetes.io/cluster/${EKSClusterName}
+          Value: "owned"
+
+  PrivateSubnetC: 
+    Type: "AWS::EC2::Subnet"
+    Properties: 
+      AvailabilityZone: "ap-northeast-1c"
+      CidrBlock: !Ref PrivateSubnetCCIDR
+      VpcId: !Ref VPC 
+      Tags: 
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-private-subnet-c"
+        - Key: !Sub kubernetes.io/cluster/${EKSClusterName}
+          Value: "owned"
+
+  PrivateSubnetD: 
+    Type: "AWS::EC2::Subnet"
+    Properties: 
+      AvailabilityZone: "ap-northeast-1d"
+      CidrBlock: !Ref PrivateSubnetDCIDR
+      VpcId: !Ref VPC 
+      Tags: 
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-private-subnet-d"
+        - Key: !Sub kubernetes.io/cluster/${EKSClusterName}
+          Value: "owned"
+
+# ------------------------------------------------------------
+#   Internet Gateway
+# ------------------------------------------------------------
+# create a internet gateway
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-igw"
+
+  AttachIGW:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+# ------------------------------------------------------------
+#   Public Route
+# ------------------------------------------------------------
+# create a public route table
+  PublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-public-route"
+
+# create a public route
+  PublicRoute:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+# associate the public route to public subnets
+  AssociatePublicRouteTableToPublicSubnetA:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+
+  AssociatePublicRouteTableToPublicSubnetC:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnetC
+      RouteTableId: !Ref PublicRouteTable
+
+  AssociatePublicRouteTableToPublicSubnetD:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PublicSubnetD
+      RouteTableId: !Ref PublicRouteTable
+
+# ------------------------------------------------------------
+#  NAT Gateway
+# ------------------------------------------------------------
+# create EIPs
+  NATGatewayEIPA:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: "VPC"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-EIP-a"
+
+  NATGatewayEIPC:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: "VPC"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-EIP-c"
+
+  NATGatewayEIPD:
+    Type: "AWS::EC2::EIP"
+    Properties:
+      Domain: "VPC"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-EIP-d"
+
+# create NAT gateways
+  NATGatewayA:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      AllocationId:
+        !GetAtt NATGatewayEIPA.AllocationId
+      SubnetId:
+        !Ref PublicSubnetA
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-NATGateway-a"
+
+  NATGatewayC:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      AllocationId:
+        !GetAtt NATGatewayEIPC.AllocationId
+      SubnetId:
+        !Ref PublicSubnetC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-NATGateway-c"
+
+  NATGatewayD:
+    Type: "AWS::EC2::NatGateway"
+    Properties:
+      AllocationId:
+        !GetAtt NATGatewayEIPD.AllocationId
+      SubnetId:
+        !Ref PublicSubnetD
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-NATGateway-d"
+
+# ------------------------------------------------------------
+#   Private Route
+# ------------------------------------------------------------
+# create private route tables
+  PrivateRouteTableA:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-private-route-a"
+
+  PrivateRouteTableC:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-private-route-c"
+
+  PrivateRouteTableD:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-private-route-d"
+
+# create private routes
+  PrivateRouteA:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref PrivateRouteTableA
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NATGatewayA
+
+  PrivateRouteC:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref PrivateRouteTableC
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NATGatewayC
+
+  PrivateRouteD:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref PrivateRouteTableD
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NATGatewayD
+
+# associate the corresponding private route to private subnets
+  AssociatePrivateRouteTableToPrivateSubnetA:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PrivateSubnetA
+      RouteTableId: !Ref PrivateRouteTableA
+
+  AssociatePrivateRouteTableToPrivateSubnetC:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PrivateSubnetC
+      RouteTableId: !Ref PrivateRouteTableC
+
+  AssociatePrivateRouteTableToPrivateSubnetD:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      SubnetId: !Ref PrivateSubnetD
+      RouteTableId: !Ref PrivateRouteTableD
+
+# ------------------------------------------------------------
+#   Security Group
+# ------------------------------------------------------------
+# create a security group
+  SecurityGroupEKS:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "a security group for EKS"
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-EKS-SG"
+
+  SecurityGroupIngress1:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !GetAtt SecurityGroupEKS.GroupId
+      IpProtocol: "-1"
+      SourceSecurityGroupId: !GetAtt SecurityGroupEKS.GroupId
+
+  SecurityGroupEgress1:
+    Type: "AWS::EC2::SecurityGroupEgress"
+    Properties:
+      GroupId: !GetAtt SecurityGroupEKS.GroupId
+      IpProtocol: "-1"
+      CidrIp: "0.0.0.0/0"
+
+# ------------------------------------------------------------#
+# Output Parameters
+# ------------------------------------------------------------#
+Outputs:
+  EKSClusterName:
+    Value: !Ref EKSClusterName
+    Export:
+      Name: !Sub "${AWS::StackName}-EKS-cluster-name"
+
+  VPC:
+    Value: !Ref VPC
+    Export:
+      Name: !Sub "${AWS::StackName}-vpc"
+
+  PublicSubnetA:
+    Value: !Ref PublicSubnetA
+    Export:
+      Name: !Sub "${AWS::StackName}-public-subnet-a"
+
+  PublicSubnetACIDR:
+    Value: !Ref PublicSubnetACIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-public-subnet-a-cidr"
+
+  PublicSubnetC:
+    Value: !Ref PublicSubnetC
+    Export:
+      Name: !Sub "${AWS::StackName}-public-subnet-c"
+
+  PublicSubnetCCIDR:
+    Value: !Ref PublicSubnetCCIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-public-subnet-c-cidr"
+
+  PublicSubnetD:
+    Value: !Ref PublicSubnetD
+    Export:
+      Name: !Sub "${AWS::StackName}-public-subnet-d"
+
+  PublicSubnetDCIDR:
+    Value: !Ref PublicSubnetDCIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-public-subnet-d-cidr"
+
+  PrivateSubnetA:
+    Value: !Ref PrivateSubnetA
+    Export:
+      Name: !Sub "${AWS::StackName}-private-subnet-a"
+
+  PrivateSubnetACIDR:
+    Value: !Ref PrivateSubnetACIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-private-subnet-a-cidr"
+
+  PrivateSubnetC:
+    Value: !Ref PrivateSubnetC
+    Export:
+      Name: !Sub "${AWS::StackName}-private-subnet-c"
+
+  PrivateSubnetCCIDR:
+    Value: !Ref PrivateSubnetCCIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-private-subnet-c-cidr"
+
+  PrivateSubnetD:
+    Value: !Ref PrivateSubnetD
+    Export:
+      Name: !Sub "${AWS::StackName}-private-subnet-d"
+
+  PrivateSubnetDCIDR:
+    Value: !Ref PrivateSubnetDCIDR
+    Export:
+      Name: !Sub "${AWS::StackName}-private-subnet-d-cidr"
+
+  NATGatewayEIPA:
+    Value: !Ref NATGatewayEIPA
+    Export:
+      Name: !Sub "${AWS::StackName}-EIP-a"
+
+  NATGatewayEIPC:
+    Value: !Ref NATGatewayEIPC
+    Export:
+      Name: !Sub "${AWS::StackName}-EIP-c"
+
+  NATGatewayEIPD:
+    Value: !Ref NATGatewayEIPD
+    Export:
+      Name: !Sub "${AWS::StackName}-EIP-d"
+
+  SecurityGroupEKS:
+    Value: !Ref SecurityGroupEKS
+    Export:
+      Name: !Sub "${AWS::StackName}-EKS-SG"
+
