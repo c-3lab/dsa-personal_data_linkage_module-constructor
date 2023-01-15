@@ -4,5 +4,9 @@
 
 cert
 src
+alb-ingress-config
+sql
+
+.env
 
 .DS_Store
