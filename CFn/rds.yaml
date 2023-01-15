@@ -1,0 +1,198 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DSA data linkage platform for personal data: create a rds"
+
+Parameters:
+  VpcStackName:
+    Type: String
+  DBName:
+    Type: String
+  DBUserPassword:
+    Type: String
+  DBUserName:
+    Type: String
+    Default: "postgres"
+  DBInstanceClass:
+    Type: String
+    Default: "db.r5.large"
+  DBEngine:
+    Type: String
+    Default: "aurora-postgresql"
+  DBVersion:
+    Type: String
+    Default: "11.15"
+  DBPort:
+    Type: Number
+    Default: 5432
+  DBAvailabilityZoneList:
+    Type: List<String>
+    Default: "ap-northeast-1a,ap-northeast-1c"
+  DBParameterGroupFamily:
+    Type: String
+    Default: "aurora-postgresql11"
+
+Resources:
+# ------------------------------------------------------------
+#   Security Group
+# ------------------------------------------------------------
+# create a security group
+  SecurityGroupRDS:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "a security group for Aurora PostgreSQL"
+      VpcId: { "Fn::ImportValue": !Sub "${VpcStackName}-vpc" }
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-${DBName}-SG"
+
+  SecurityGroupRDSIngressA:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !GetAtt SecurityGroupRDS.GroupId
+      IpProtocol: "tcp"
+      FromPort: 5432
+      ToPort: 5432
+      CidrIp: { "Fn::ImportValue": !Sub "${VpcStackName}-private-subnet-a-cidr" }
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-${DBName}-SG-private-subnet-a"
+
+  SecurityGroupRDSIngressC:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !GetAtt SecurityGroupRDS.GroupId
+      IpProtocol: "tcp"
+      FromPort: 5432
+      ToPort: 5432
+      CidrIp: { "Fn::ImportValue": !Sub "${VpcStackName}-private-subnet-c-cidr" }
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-${DBName}-SG-private-subnet-c"
+
+  SecurityGroupRDSIngressD:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !GetAtt SecurityGroupRDS.GroupId
+      IpProtocol: "tcp"
+      FromPort: 5432
+      ToPort: 5432
+      CidrIp: { "Fn::ImportValue": !Sub "${VpcStackName}-private-subnet-d-cidr" }
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-${DBName}-SG-private-subnet-d"
+
+# ------------------------------------------------------------
+#   DB Subnet Group
+# ------------------------------------------------------------
+# create a db subnet group
+  DBSubnetGroupRDS:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupName: !Sub "${AWS::StackName}-${DBName}-subnet"
+      DBSubnetGroupDescription: "a db subnet group for Aurora PostgreSQL"
+      SubnetIds: 
+        - { "Fn::ImportValue": !Sub "${VpcStackName}-private-subnet-a" }
+        - { "Fn::ImportValue": !Sub "${VpcStackName}-private-subnet-c" }
+        - { "Fn::ImportValue": !Sub "${VpcStackName}-private-subnet-d" }
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-${DBName}-subnet"
+
+# ------------------------------------------------------------
+#   DB Parameter Group
+# ------------------------------------------------------------
+# create a db cluster parameter group
+  DBClusterParameterGroupRDS:
+    Type: "AWS::RDS::DBClusterParameterGroup"
+    Properties:
+      Description: "a db cluster parameter group for Aurora PostgreSQL"
+      Family: !Ref DBParameterGroupFamily
+      Parameters:
+        client_encoding: "UTF8"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-${DBName}-db-cluster-param-group"
+
+# create a db instance parameter group
+  DBParameterGroupRDS:
+    Type: "AWS::RDS::DBParameterGroup"
+    Properties:
+      Description: "a db parameter group for Aurora PostgreSQL"
+      Family: !Ref DBParameterGroupFamily
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-${DBName}-db-param-group"
+
+# ------------------------------------------------------------
+#   RDS Cluster
+# ------------------------------------------------------------
+# create a db cluster
+  RDSCluster:
+    Type: "AWS::RDS::DBCluster"
+    Properties:
+      DBClusterIdentifier: !Join ["", !Split ["_", !Sub "${AWS::StackName}-${DBName}-cluster"]]
+      DatabaseName: !Ref DBName
+      Engine: !Ref DBEngine
+      EngineVersion: !Ref DBVersion
+      Port: !Ref DBPort
+      MasterUsername: !Ref DBUserName
+      MasterUserPassword: !Ref DBUserPassword
+      DBSubnetGroupName: !Ref DBSubnetGroupRDS
+      DBClusterParameterGroupName: !Ref DBClusterParameterGroupRDS
+      VpcSecurityGroupIds:
+      - !Ref SecurityGroupRDS
+      StorageEncrypted: true
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-${DBName}-${DBEngine}-${DBVersion}-cluster"
+
+# create two db instances as multi-az
+  RDSDBInstance1:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceIdentifier: !Join ["", !Split ["_", !Sub "${AWS::StackName}-${DBName}-instance-1"]]
+      DBClusterIdentifier: !Ref RDSCluster
+      Engine: !Ref DBEngine
+      EngineVersion: !Ref DBVersion
+      AvailabilityZone: !Select [0, !Ref DBAvailabilityZoneList]
+      DBInstanceClass: !Ref DBInstanceClass
+      DBSubnetGroupName: !Ref DBSubnetGroupRDS
+      DBParameterGroupName: !Ref DBParameterGroupRDS
+      PubliclyAccessible: 'false'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-${DBName}-${DBEngine}-${DBVersion}-instance-1"
+
+  RDSDBInstance2:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceIdentifier: !Join ["", !Split ["_", !Sub "${AWS::StackName}-${DBName}-instance-2"]]
+      DBClusterIdentifier: !Ref RDSCluster
+      Engine: !Ref DBEngine
+      EngineVersion: !Ref DBVersion
+      AvailabilityZone: !Select [1, !Ref DBAvailabilityZoneList]
+      DBInstanceClass: !Ref DBInstanceClass
+      DBSubnetGroupName: !Ref DBSubnetGroupRDS
+      DBParameterGroupName: !Ref DBParameterGroupRDS
+      PubliclyAccessible: 'false'
+      Tags:
+      - Key: Name
+        Value: !Sub "${AWS::StackName}-${DBName}-${DBEngine}-${DBVersion}-instance-2"
+
+Outputs:
+  DBName:
+    Value: !Ref DBName
+    Export:
+      Name: !Sub "${AWS::StackName}-dbname"
+  DBUserName:
+    Value: !Ref DBUserName
+    Export:
+      Name: !Sub "${AWS::StackName}-db-username"
+  DBPort:
+    Value: !Ref DBPort
+    Export:
+      Name: !Sub "${AWS::StackName}-db-port"
+  RDSEndpoint:
+    Value: !GetAtt RDSCluster.Endpoint.Address
+    Export:
+      Name: !Sub "${AWS::StackName}-endpoint-address"
+
