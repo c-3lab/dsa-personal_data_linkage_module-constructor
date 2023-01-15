@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DSA data linkage platform for personal data: create DNS A Records"
+
+Parameters:
+  DomainName:
+    Type: String
+  HostedZoneId:
+    Type: String
+  ALBIngressHost:
+    Type: String
+  ALBHostedZoneId:
+    Type: String
+
+Resources:
+# ------------------------------------------------------------
+#   Route53
+# ------------------------------------------------------------
+# create a DNS A Records
+  DNSARecordSet:
+    Type: "AWS::Route53::RecordSetGroup"
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      RecordSets:
+      - Name: !Sub "root.${DomainName}"
+        Type: "A"
+        AliasTarget:
+          HostedZoneId: !Ref ALBHostedZoneId
+          DNSName: !Ref ALBIngressHost
+      - Name: !Sub "region000001.${DomainName}"
+        Type: "A"
+        AliasTarget:
+          HostedZoneId: !Ref ALBHostedZoneId
+          DNSName: !Ref ALBIngressHost
+      - Name: !Sub "application000001.${DomainName}"
+        Type: "A"
+        AliasTarget:
+          HostedZoneId: !Ref ALBHostedZoneId
+          DNSName: !Ref ALBIngressHost
+
+Outputs:
+  DNSARecordSet:
+    Value: !Ref DNSARecordSet
+    Export:
+      Name: !Sub "${AWS::StackName}-recordset"
+
