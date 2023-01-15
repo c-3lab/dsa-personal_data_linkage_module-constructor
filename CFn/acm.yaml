@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DSA data linkage platform for personal data: create ACM"
+
+Parameters:
+  DomainName:
+    Type: String
+  HostedZoneId:
+    Type: String
+
+Resources:
+# ------------------------------------------------------------
+#   ACM
+# ------------------------------------------------------------
+# create a ACM Certificate (DNS validateion)
+  ACMCertificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties:
+      DomainName: !Sub "*.${DomainName}"
+      DomainValidationOptions:
+        - DomainName: !Sub "*.${DomainName}"
+          HostedZoneId: !Ref HostedZoneId
+      ValidationMethod: DNS
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-acm"
+
+Outputs:
+  ACMCertificate:
+    Value: !Ref ACMCertificate
+    Export:
+      Name: !Sub "${AWS::StackName}-acm"
+

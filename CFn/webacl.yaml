@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DSA data linkage platform for personal data: create WebACL"
+
+Parameters:
+  AllowedIP1:
+    Type: String
+
+Resources:
+# ------------------------------------------------------------
+#   WebACL
+# ------------------------------------------------------------
+# create a WebACL (IP restriction)
+  IPRestrictionWebACL:
+    Type: "AWS::WAFv2::WebACL"
+    Properties:
+      Name: !Sub "${AWS::StackName}-webacl"
+      Scope: "REGIONAL"
+      DefaultAction:
+        Block: {}
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: "IpRestrictionWebACL"
+      Rules:
+        - Name: !Sub "${AWS::StackName}-ip-restriction-rule"
+          Priority: 0
+          Action:
+            Allow: {}
+          Statement:
+            IPSetReferenceStatement:
+              Arn: !GetAtt RestrictIPSet.Arn
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: "IpRestrictionWebACLRule"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-webacl"
+
+  RestrictIPSet:
+    Type: "AWS::WAFv2::IPSet"
+    Properties:
+      Name: !Sub "${AWS::StackName}-restrict-ipset"
+      Scope: "REGIONAL"
+      IPAddressVersion: "IPV4"
+      Addresses:
+          - !Sub "${AllowedIP1}/32"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-restrict-ipset"
+
+Outputs:
+  IPRestrictionWebACL:
+    Value: !GetAtt IPRestrictionWebACL.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-webacl"
+
