@@ -1,6 +1,9 @@
 #!/bin/bash
 
-VPC_STACK_NAME=pxr-vpc
+source .env
+
+echo "VPC_STACK_NAME=$VPC_STACK_NAME"
+echo "NAMESPACE=$NAMESPACE"
 
 CLUSTER_NAME=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-EKS-cluster-name'].OutputValue" --output text); echo "CLUSTER_NAME=$CLUSTER_NAME"
 VPCID=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-vpc'].OutputValue" --output text); echo "VPCID=$VPCID"
@@ -25,13 +28,13 @@ aws eks update-kubeconfig \
 --region ap-northeast-1 \
 --name $CLUSTER_NAME
 
-kubectl create namespace pxr
+kubectl create namespace $NAMESPACE
 
 eksctl create fargateprofile \
 --region ap-northeast-1 \
 --cluster $CLUSTER_NAME \
 --name $CLUSTER_NAME-profile \
---namespace pxr \
+--namespace $NAMESPACE \
 --tags "Name=$CLUSTER_NAME-profile"
 
 eksctl get cluster \

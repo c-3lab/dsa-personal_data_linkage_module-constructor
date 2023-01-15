@@ -1,6 +1,7 @@
 #!/bin/bash
 
-ECR_STACK_NAME=pxr-ecr
+source .env
+echo "ECR_STACK_NAME=$ECR_STACK_NAME"
 
 ACCOUNTID=$(aws sts get-caller-identity --query "Account" --output text);echo "ACCOUNTID=$ACCOUNTID"
 

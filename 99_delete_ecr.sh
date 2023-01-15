@@ -1,6 +1,8 @@
 #!/bin/bash
 
-ECR_STACK_NAME=pxr-ecr
+source .env
+
+echo "ECR_STACK_NAME=$ECR_STACK_NAME"
 
 # delete images
 aws ecr batch-delete-image --repository-name pxr-access-control-manage-service --image-ids imageTag=1.0

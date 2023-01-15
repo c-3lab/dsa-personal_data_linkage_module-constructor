@@ -1,13 +1,14 @@
 #!/bin/bash
 
 source .env
+
 echo "RDS_STACK_NAME=$RDS_STACK_NAME"
 
 echo "NAMESPACE=$NAMESPACE"
 
 echo "DB_NAME=$DB_NAME"
 
-echo "DOMAIN_NAME=$DOMAIN_NAME"
+echo "CLOUD_SEARCH_DOMAIN_NAME=$CLOUD_SEARCH_DOMAIN_NAME"
 echo "EXT_NAME=$EXT_NAME"
 
 echo "HASH_SALT=$HASH_SALT"
@@ -18,7 +19,7 @@ SED="docker run --rm -v $(pwd)/src:/opt/src -w /opt busybox:1.36 sed"
 DB_ENDPOINT=$(aws cloudformation describe-stacks --stack-name $RDS_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$RDS_STACK_NAME-endpoint-address'].OutputValue" --output text); echo "DB_ENDPOINT=$DB_ENDPOINT"
 DB_USER_NAME=$(aws cloudformation describe-stacks --stack-name $RDS_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$RDS_STACK_NAME-db-username'].OutputValue" --output text); echo "DB_USER_NAME=$DB_USER_NAME"
 
-SEARCH_ENDPOINT=$(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$DOMAIN_NAME'].SearchService.Endpoint" --output text);echo "SEARCH_ENDPOINT=$SEARCH_ENDPOINT"
+SEARCH_ENDPOINT=$(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$CLOUD_SEARCH_DOMAIN_NAME'].SearchService.Endpoint" --output text);echo "SEARCH_ENDPOINT=$SEARCH_ENDPOINT"
 
 ACCOUNTID=$(aws sts get-caller-identity --query "Account" --output text);echo "ACCOUNTID=$ACCOUNTID"
 

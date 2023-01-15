@@ -1,6 +1,8 @@
 #!/bin/bash
 
-VPC_STACK_NAME=pxr-vpc
+source .env
+
+echo "VPC_STACK_NAME=$VPC_STACK_NAME"
 
 ACCOUNTID=$(aws sts get-caller-identity --query "Account" --output text);echo "ACCOUNTID=$ACCOUNTID"
 CLUSTER_NAME=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-EKS-cluster-name'].OutputValue" --output text); echo "CLUSTER_NAME=$CLUSTER_NAME"

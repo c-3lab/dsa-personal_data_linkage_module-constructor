@@ -1,13 +1,14 @@
 #!/bin/bash
 
-VPC_STACK_NAME=pxr-vpc
+source .env
 
-DOMAIN_NAME=pxr
+echo "VPC_STACK_NAME=$VPC_STACK_NAME"
+echo "CLOUD_SEARCH_DOMAIN_NAME=$CLOUD_SEARCH_DOMAIN_NAME"
 
 # create a CloudSearch
-aws cloudsearch create-domain --domain-name $DOMAIN_NAME
+aws cloudsearch create-domain --domain-name $CLOUD_SEARCH_DOMAIN_NAME
 aws cloudsearch define-index-field \
---domain-name $DOMAIN_NAME \
+--domain-name $CLOUD_SEARCH_DOMAIN_NAME \
 --name description \
 --type text \
 --return-enabled true \
@@ -17,7 +18,7 @@ aws cloudsearch define-index-field \
 
 # create indexes
 aws cloudsearch define-index-field \
---domain-name $DOMAIN_NAME \
+--domain-name $CLOUD_SEARCH_DOMAIN_NAME \
 --name name \
 --type text \
 --return-enabled true \
@@ -26,7 +27,7 @@ aws cloudsearch define-index-field \
 --analysis-scheme _ja_default_
 
 aws cloudsearch define-index-field \
---domain-name $DOMAIN_NAME \
+--domain-name $CLOUD_SEARCH_DOMAIN_NAME \
 --name code \
 --type int \
 --facet-enabled true \
@@ -34,21 +35,21 @@ aws cloudsearch define-index-field \
 --sort-enabled true
 
 aws cloudsearch define-index-field \
---domain-name $DOMAIN_NAME \
+--domain-name $CLOUD_SEARCH_DOMAIN_NAME \
 --name id \
 --type int \
 --facet-enabled true \
 --return-enabled true \
 --sort-enabled true
 
-aws cloudsearch index-documents --domain-name $DOMAIN_NAME
+aws cloudsearch index-documents --domain-name $CLOUD_SEARCH_DOMAIN_NAME
 
 # create a access policy
 EIP1=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-EIP-a'].OutputValue" --output text); echo "EIP1=$EIP1"
 EIP2=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-EIP-c'].OutputValue" --output text); echo "EIP2=$EIP2"
 EIP3=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-EIP-d'].OutputValue" --output text); echo "EIP3=$EIP3"
 
-aws cloudsearch update-service-access-policies --domain-name pxr --access-policies \
+aws cloudsearch update-service-access-policies --domain-name $CLOUD_SEARCH_DOMAIN_NAME --access-policies \
   "{\"Version\":\"2012-10-17\",
     \"Statement\":[{
       \"Sid\":\"eip1\",
@@ -67,7 +68,7 @@ aws cloudsearch update-service-access-policies --domain-name pxr --access-polici
   }"
 
 function get_state () {
-  echo $(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$DOMAIN_NAME'].Processing" --output text)
+  echo $(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$CLOUD_SEARCH_DOMAIN_NAME'].Processing" --output text)
 }
 
 PROCESSING="True"
@@ -78,6 +79,6 @@ while [ $PROCESSING == "True" ]; do
 done
 
 # get endpoints
-SEARCH_ENDPOINT=$(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$DOMAIN_NAME'].SearchService.Endpoint" --output text);echo "SEARCH_ENDPOINT=$SEARCH_ENDPOINT"
-DOC_ENDPOINT=$(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$DOMAIN_NAME'].DocService.Endpoint" --output text);echo "DOC_ENDPOINT=$DOC_ENDPOINT"
+SEARCH_ENDPOINT=$(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$CLOUD_SEARCH_DOMAIN_NAME'].SearchService.Endpoint" --output text);echo "SEARCH_ENDPOINT=$SEARCH_ENDPOINT"
+DOC_ENDPOINT=$(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$CLOUD_SEARCH_DOMAIN_NAME'].DocService.Endpoint" --output text);echo "DOC_ENDPOINT=$DOC_ENDPOINT"
 

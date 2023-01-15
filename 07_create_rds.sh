@@ -1,10 +1,10 @@
 #!/bin/bash
 
-VPC_STACK_NAME=pxr-vpc
-RDS_STACK_NAME=pxr-rds
+source .env
 
-DB_NAME="pxr_db"
-DB_USER_PASSWORD="postgresPass"
+echo "VPC_STACK_NAME=$VPC_STACK_NAME"
+echo "RDS_STACK_NAME=$RDS_STACK_NAME"
+echo "DB_NAME=$DB_NAME"
 
 # create vpc
 aws cloudformation create-stack --region ap-northeast-1 --stack-name $RDS_STACK_NAME --template-body file://CFn/rds.yaml \

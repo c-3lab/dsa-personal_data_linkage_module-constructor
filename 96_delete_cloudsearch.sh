@@ -1,11 +1,13 @@
 #!/bin/bash
 
-DOMAIN_NAME=pxr
+source .env
 
-aws cloudsearch delete-domain --domain-name $DOMAIN_NAME
+echo "CLOUD_SEARCH_DOMAIN_NAME=$CLOUD_SEARCH_DOMAIN_NAME"
+
+aws cloudsearch delete-domain --domain-name $CLOUD_SEARCH_DOMAIN_NAME
 
 function get_state () {
-  echo $(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$DOMAIN_NAME'].Processing" --output text)
+  echo $(aws cloudsearch describe-domains --query "DomainStatusList[?DomainName=='$CLOUD_SEARCH_DOMAIN_NAME'].Processing" --output text)
 }
 
 PROCESSING="True"

@@ -6,7 +6,8 @@ utils/start_psql_pod.sh
 
 # copy sql files to the started container (at another terminal)
 ```
-kubectl --namespace pxr cp src/ddl/db pg:/opt
+source .env
+kubectl --namespace $NAMESPACE cp src/ddl/db pg:/opt
 ```
 
 # execute below commands

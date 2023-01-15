@@ -1,7 +1,9 @@
 #!/bin/bash
 
+source .env
+
 # delete a secret
-kubectl -n pxr delete secret nginx-secret
+kubectl -n $NAMESPACE delete secret nginx-secret
 
 # delete deployments
 kubectl delete -f src/manifest/eks/ingress/pxr-ingress.yaml
