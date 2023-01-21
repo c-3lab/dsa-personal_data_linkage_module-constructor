@@ -22,8 +22,8 @@ if [ ! -f src/pxr-certification-authority-service/Dockerfile.back ]; then
   cp src/pxr-certification-authority-service/Dockerfile src/pxr-certification-authority-service/Dockerfile.back
   $SED -i -e "/RUN chmod +x \/usr\/src\/app\/starting.sh/a RUN chmod +x /usr/src/app/create-certificate-chain.bash" /opt/src/pxr-certification-authority-service/Dockerfile
 fi
-if [ ! -f src/catalog/catalogRegister.js.back ]; then
-  cp src/catalog/catalogRegister.js src/catalog/catalogRegister.js.back
-  $SED -i -e "65 s:^.*$:            return fs\.statSync\(file\)\.isFile\(\) \&\& /\.\*\\\.json\$/\.test\(file\) \&\& \! /package\\\-lock\\\.json/\.test\(file\) \&\& \! /package\\\.json/\.test\(file\);\r:g" /opt/src/catalog/catalogRegister.js
+if [ ! -d src/catalog.back ]; then
+  mv src/catalog src/catalog.back
+  cp -rp workaround/catalog src/catalog
 fi
 
