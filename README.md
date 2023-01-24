@@ -1,4 +1,4 @@
-# dsa\_personal\_data\_linkage\_module\_constructor
+# dsa-personal\_data\_linkage\_module-constructor
 
 This repository contains scripts and CFn Templates to build a personal data linkage platform of DSA onto AWS.
 
@@ -23,8 +23,8 @@ This repository contains scripts and CFn Templates to build a personal data link
 
 ## Contributers
 
-<a href="https://github.com/c-3lab/dsa_personal_data_linkage_module_constructor/graphs/contributors">
-  <img src="https://contributors-img.web.app/image?repo=c-3lab/dsa_personal_data_linkage_module_constructor" />
+<a href="https://github.com/c-3lab/dsa-personal_data_linkage_module-constructor/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=c-3lab/dsa-personal_data_linkage_module-constructor" />
 </a>
 
 Made with [contributors-img](https://contributors-img.web.app).
