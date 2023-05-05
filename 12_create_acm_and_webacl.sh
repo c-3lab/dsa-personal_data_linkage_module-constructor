@@ -32,8 +32,8 @@ SED="docker run --rm -v $(pwd)/src:/opt/src -w /opt busybox:1.36 sed"
 ACM_ARN=$(aws cloudformation describe-stacks --stack-name $ACM_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$ACM_STACK_NAME-acm'].OutputValue" --output text); echo "ACM_ARN=$ACM_ARN"
 WEBACL_ARN=$(aws cloudformation describe-stacks --stack-name $WEBACL_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$WEBACL_STACK_NAME-webacl'].OutputValue" --output text); echo "WEBACL_ARN=$WEBACL_ARN"
 
-$SED -i -e "s|^    alb.ingress.kubernetes.io/certificate-arn: .*$|    alb.ingress.kubernetes.io/certificate-arn: $ACM_ARN|g" src/manifest/eks/ingress/pxr-ingress.yaml
-$SED -i -e "s|^    alb.ingress.kubernetes.io/wafv2-acl-arn: .*$|    alb.ingress.kubernetes.io/wafv2-acl-arn: $WEBACL_ARN|g" src/manifest/eks/ingress/pxr-ingress.yaml
-$SED -i -e "/alb.ingress.kubernetes.io\/security-groups/d" src/manifest/eks/ingress/pxr-ingress.yaml
-$SED -i -e "s/domain.com/$DOMAIN/g" src/manifest/eks/ingress/pxr-ingress.yaml
+$SED -i -e "s|^    alb.ingress.kubernetes.io/certificate-arn: .*$|    alb.ingress.kubernetes.io/certificate-arn: $ACM_ARN|g" src/pxr-ver-1.0/delivery/manifest/eks/ingress/pxr-ingress.yaml
+$SED -i -e "s|^    alb.ingress.kubernetes.io/wafv2-acl-arn: .*$|    alb.ingress.kubernetes.io/wafv2-acl-arn: $WEBACL_ARN|g" src/pxr-ver-1.0/delivery/manifest/eks/ingress/pxr-ingress.yaml
+$SED -i -e "/alb.ingress.kubernetes.io\/security-groups/d" src/pxr-ver-1.0/delivery/manifest/eks/ingress/pxr-ingress.yaml
+$SED -i -e "s/domain.com/$DOMAIN/g" src/pxr-ver-1.0/delivery/manifest/eks/ingress/pxr-ingress.yaml
 

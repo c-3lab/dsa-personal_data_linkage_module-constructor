@@ -24,75 +24,78 @@ SEARCH_ENDPOINT=$(aws cloudsearch describe-domains --query "DomainStatusList[?Do
 ACCOUNTID=$(aws sts get-caller-identity --query "Account" --output text);echo "ACCOUNTID=$ACCOUNTID"
 
 # replace placeholders in manifest
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<ext_name>/$EXT_NAME/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<cloudsearch-endpoint>/$SEARCH_ENDPOINT/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<password_hashsalt>/$HASH_SALT/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<password_hashStrechCount>/$HASH_STRETCH_COUNT/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<db_endpoint>/$DB_ENDPOINT/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<database_name>/$DB_NAME/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<user_name>/$DB_USER_NAME/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<password>/$DB_USER_PASSWORD/g"
-find src/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<namespace>/$NAMESPACE/g"
+echo "replacing manifests..."
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<ext_name>/$EXT_NAME/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<cloudsearch-endpoint>/$SEARCH_ENDPOINT/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<password_hashsalt>/$HASH_SALT/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<password_hashStrechCount>/$HASH_STRETCH_COUNT/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<db_endpoint>/$DB_ENDPOINT/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<database_name>/$DB_NAME/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<user_name>/$DB_USER_NAME/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<password>/$DB_USER_PASSWORD/g"
+find src/pxr-ver-1.0/delivery/manifest/eks -name "*.yaml" -print0 | xargs -0 $SED -i -e "s/<namespace>/$NAMESPACE/g"
 
-$SED -i -e "/      - name: operator/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-operator-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
-$SED -i -e "/      - name: pxr-block-proxy/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-block-proxy-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
-$SED -i -e "/      - name: notification/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-notification-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
-$SED -i -e "/      - name: book-operate/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-book-operate-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
-$SED -i -e "/      - name: local-ctoken/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-local-ctoken-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
-$SED -i -e "/      - name: certificate-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certificate-manage-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
-$SED -i -e "/      - name: access-control/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
-$SED -i -e "/      - name: binary-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-binary-manage-service:1.0/}" src/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: operator/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-operator-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: pxr-block-proxy/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-block-proxy-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: notification/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-notification-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: book-operate/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-book-operate-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: local-ctoken/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-local-ctoken-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: certificate-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certificate-manage-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: access-control/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
+$SED -i -e "/      - name: binary-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-binary-manage-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/application000001-deployment.yaml
 
-$SED -i -e "/      - name: operator/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-operator-service:1.0/}" src/manifest/eks/deployment/region000001-deployment.yaml
-$SED -i -e "/      - name: pxr-block-proxy/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-block-proxy-service:1.0/}" src/manifest/eks/deployment/region000001-deployment.yaml
-$SED -i -e "/      - name: notification/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-notification-service:1.0/}" src/manifest/eks/deployment/region000001-deployment.yaml
-$SED -i -e "/      - name: book-operate/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-book-operate-service:1.0/}" src/manifest/eks/deployment/region000001-deployment.yaml
-$SED -i -e "/      - name: certificate-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certificate-manage-service:1.0/}" src/manifest/eks/deployment/region000001-deployment.yaml
-$SED -i -e "/      - name: access-control/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-service:1.0/}" src/manifest/eks/deployment/region000001-deployment.yaml
+$SED -i -e "/      - name: operator/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-operator-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/region000001-deployment.yaml
+$SED -i -e "/      - name: pxr-block-proxy/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-block-proxy-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/region000001-deployment.yaml
+$SED -i -e "/      - name: notification/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-notification-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/region000001-deployment.yaml
+$SED -i -e "/      - name: book-operate/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-book-operate-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/region000001-deployment.yaml
+$SED -i -e "/      - name: certificate-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certificate-manage-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/region000001-deployment.yaml
+$SED -i -e "/      - name: access-control/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/region000001-deployment.yaml
 
-$SED -i -e "/      - name: operator/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-operator-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: catalog/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-catalog-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: catalog-update/{n;s/        image: .*/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-catalog-update-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: pxr-block-proxy/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-block-proxy-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: notification/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-notification-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: book-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-book-manage-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: identity-verificate/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-identity-verificate-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: ctoken-ledger/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-ctoken-ledger-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: certificate-authority/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certification-authority-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: certificate-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certificate-manage-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: access-control/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
-$SED -i -e "/      - name: access-control-manage/{n;s/        image: .*/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-manage-service:1.0/}" src/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: operator/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-operator-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: catalog/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-catalog-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: catalog-update/{n;s/        image: .*/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-catalog-update-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: pxr-block-proxy/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-block-proxy-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: notification/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-notification-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: book-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-book-manage-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: identity-verificate/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-identity-verificate-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: ctoken-ledger/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-ctoken-ledger-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: certificate-authority/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certification-authority-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: certificate-manage/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-certificate-manage-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: access-control/{n;s/        image: <ECRイメージURL:タグ>/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
+$SED -i -e "/      - name: access-control-manage/{n;s/        image: .*/        image: $ACCOUNTID.dkr.ecr.ap-northeast-1.amazonaws.com\/pxr-access-control-manage-service:1.0/}" src/pxr-ver-1.0/delivery/manifest/eks/deployment/root-deployment.yaml
 
 # replace placeholders in catalog
 
+echo "replacing catalog..."
+
 PXR_ROOT_ACTOR_CODE="1000431"
-if [ -d src/catalog/ext/\{ext_name\} ]; then
-  mv src/catalog/ext/\{ext_name\} src/catalog/ext/$EXT_NAME
+if [ -d src/pxr-ver-1.0/delivery/catalog/ext/\{ext_name\} ]; then
+  mv src/pxr-ver-1.0/delivery/catalog/ext/\{ext_name\} src/pxr-ver-1.0/delivery/catalog/ext/$EXT_NAME
 fi
-if [ -d src/catalog/ext/pxrext/person/user-information/actor_\{pxr_root_actor_code\} ]; then
-  mv src/catalog/ext/pxrext/person/user-information/actor_\{pxr_root_actor_code\} src/catalog/ext/pxrext/person/user-information/actor_$PXR_ROOT_ACTOR_CODE
+if [ -d src/pxr-ver-1.0/delivery/catalog/ext/pxrext/person/user-information/actor_\{pxr_root_actor_code\} ]; then
+  mv src/pxr-ver-1.0/delivery/catalog/ext/pxrext/person/user-information/actor_\{pxr_root_actor_code\} src/pxr-ver-1.0/delivery/catalog/ext/pxrext/person/user-information/actor_$PXR_ROOT_ACTOR_CODE
 fi
-if [ -d src/catalog/ext/pxrext/setting/actor-own/pxr-root/actor_\{pxr_root_actor_code\} ]; then
-  mv src/catalog/ext/pxrext/setting/actor-own/pxr-root/actor_\{pxr_root_actor_code\} src/catalog/ext/pxrext/setting/actor-own/pxr-root/actor_$PXR_ROOT_ACTOR_CODE
+if [ -d src/pxr-ver-1.0/delivery/catalog/ext/pxrext/setting/actor-own/pxr-root/actor_\{pxr_root_actor_code\} ]; then
+  mv src/pxr-ver-1.0/delivery/catalog/ext/pxrext/setting/actor-own/pxr-root/actor_\{pxr_root_actor_code\} src/pxr-ver-1.0/delivery/catalog/ext/pxrext/setting/actor-own/pxr-root/actor_$PXR_ROOT_ACTOR_CODE
 fi
-if [ -d src/catalog/ext/pxrext/setting/actor/pxr-root/actor_\{pxr_root_actor_code\} ]; then
-  mv src/catalog/ext/pxrext/setting/actor/pxr-root/actor_\{pxr_root_actor_code\} src/catalog/ext/pxrext/setting/actor/pxr-root/actor_$PXR_ROOT_ACTOR_CODE
+if [ -d src/pxr-ver-1.0/delivery/catalog/ext/pxrext/setting/actor/pxr-root/actor_\{pxr_root_actor_code\} ]; then
+  mv src/pxr-ver-1.0/delivery/catalog/ext/pxrext/setting/actor/pxr-root/actor_\{pxr_root_actor_code\} src/pxr-ver-1.0/delivery/catalog/ext/pxrext/setting/actor/pxr-root/actor_$PXR_ROOT_ACTOR_CODE
 fi
 
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<ext_name>/$EXT_NAME/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_actor_code>/$PXR_ROOT_ACTOR_CODE/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_name>/流通制御サービスプロバイダー/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<global_setting_code>/1000374/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pf_terms_code>/1000500/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<actor_setting_code>/1000731/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<actor_own_setting_code>/1000781/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_block_code>/1000401/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<person_item_type_address_code>/1000371/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<person_item_type_yob_code>/1000372/g"
-find src/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_user_information_code>/1000373/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<ext_name>/$EXT_NAME/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_actor_code>/$PXR_ROOT_ACTOR_CODE/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_name>/流通制御サービスプロバイダー/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<global_setting_code>/1000374/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pf_terms_code>/1000500/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<actor_setting_code>/1000731/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<actor_own_setting_code>/1000781/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_block_code>/1000401/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<person_item_type_address_code>/1000371/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<person_item_type_yob_code>/1000372/g"
+find src/pxr-ver-1.0/delivery/catalog -type f -print0 | xargs -0 $SED -i -e "s/<pxr_root_user_information_code>/1000373/g"
 
 echo "CATALOG_DESC=$CATALOG_DESC"
-$SED -i -e "s/<catalog_description>/$CATALOG_DESC/g" src/catalog/society_catalog.json
+$SED -i -e "s/<catalog_description>/$CATALOG_DESC/g" src/pxr-ver-1.0/delivery/catalog/society_catalog.json
 
 echo "CATALOG_PF_DESC_TITLE=$CATALOG_PF_DESC_TITLE"
 echo "CATALOG_PF_DESC_SUBTITLE=$CATALOG_PF_DESC_SUBTITLE"
@@ -122,10 +125,10 @@ $SED -i -e "s/<pf_description_title>/$CATALOG_PF_DESC_TITLE/g" \
         -e "s/<organization_statement_title>/$CATALOG_ORG_TITLE/g" \
         -e "s/<organization_statement_subtitle>/$CATALOG_ORG_SUBTITLE/g" \
         -e "s/<organization_statement_sentence>/$CATALOG_ORG_TEXT/g" \
-  src/catalog/ext/$EXT_NAME/actor/pxr-root/流通制御サービスプロバイダー_item.json
+  src/pxr-ver-1.0/delivery/catalog/ext/$EXT_NAME/actor/pxr-root/流通制御サービスプロバイダー_item.json
 
 echo "DOMAIN=$DOMAIN"
-$SED -i -e "s/<domain>/$DOMAIN/g" src/catalog/ext/$EXT_NAME/block/pxr-root/PXR-Root-Block_item.json
+$SED -i -e "s/<domain>/$DOMAIN/g" src/pxr-ver-1.0/delivery/catalog/ext/$EXT_NAME/block/pxr-root/PXR-Root-Block_item.json
 
 echo "ROOT_EMAIL_ADDRESS=$ROOT_EMAIL_ADDRESS"
 echo "ROOT_TEL_NUMBER=$ROOT_TEL_NUMBER"
@@ -135,7 +138,7 @@ $SED -i -e "s/<email-address>/$ROOT_EMAIL_ADDRESS/g" \
         -e "s/<tel-number>/$ROOT_TEL_NUMBER/g" \
         -e "s/<address>/$ROOT_ADDRESS/g" \
         -e "s/<information-site>/$ROOT_INFO_SITE/g" \
-  src/catalog/ext/$EXT_NAME/setting/actor-own/pxr-root/actor_$PXR_ROOT_ACTOR_CODE/setting_item.json
+  src/pxr-ver-1.0/delivery/catalog/ext/$EXT_NAME/setting/actor-own/pxr-root/actor_$PXR_ROOT_ACTOR_CODE/setting_item.json
 
 echo "SETTING_MANAGE_PASSWORD_SIMILARITY_CHECK=$SETTING_MANAGE_PASSWORD_SIMILARITY_CHECK"
 echo "SETTING_PXR_ID_PREFIX=$SETTING_PXR_ID_PREFIX"
@@ -207,7 +210,7 @@ $SED -i -e "s/<management_password_similarity_check>/$SETTING_MANAGE_PASSWORD_SI
         -e "s/<book_deletion_pending_term_value>/$SETTING_BOOK_DELETION_PENDING_TERM_VAL/g" \
         -e "s/<data_download_term_expiration_type>/$SETTING_DATA_DOWNLOAD_TERM_EXPIRATION_TYPE/g" \
         -e "s/<data_download_term_expiration_value>/$SETTING_DATA_DOWNLOAD_TERM_EXPIRATION_VAL/g" \
-  src/catalog/ext/$EXT_NAME/setting/global/setting_item.json
+  src/pxr-ver-1.0/delivery/catalog/ext/$EXT_NAME/setting/global/setting_item.json
 
 echo "SETTING_PF_TERMS_TITLE=$SETTING_PF_TERMS_TITLE"
 echo "SETTING_PF_TERMS_SUBTITLE=$SETTING_PF_TERMS_SUBTITLE"
@@ -223,5 +226,5 @@ $SED -i -e "s/<pf_terms_title>/$SETTING_PF_TERMS_TITLE/g" \
         -e "s/<period-of-re-consent>/$SETTING_PERIOD_RECONSENT/g" \
         -e "s/<deleting-data-flag>/$SETTING_DELETING_DATA_FLAG/g" \
         -e "s/<returning-data-flag>/$SETTING_RETURNING_DATA_FLAG/g" \
-  src/catalog/ext/$EXT_NAME/terms-of-use/platform/pf-terms-of-use_item.json
+  src/pxr-ver-1.0/delivery/catalog/ext/$EXT_NAME/terms-of-use/platform/pf-terms-of-use_item.json
 

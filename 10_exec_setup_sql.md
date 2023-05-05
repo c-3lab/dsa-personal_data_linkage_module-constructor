@@ -7,7 +7,7 @@ utils/start_psql_pod.sh
 # copy sql files to the started container (at another terminal)
 ```
 source .env
-kubectl --namespace $NAMESPACE cp src/ddl/db pg:/opt
+kubectl --namespace $NAMESPACE cp src/pxr-ver-1.0/database pg:/opt
 ```
 
 # execute below commands
@@ -63,21 +63,21 @@ CREATE SCHEMA pxr_ctoken_ledger AUTHORIZATION pxr_ctoken_ledger_user;
 CREATE SCHEMA pxr_local_ctoken AUTHORIZATION pxr_local_ctoken_user;
 ```
 ```
-\i /opt/db/pxr-access-control-manage-service/createTable.sql
-\i /opt/db/pxr-access-control-service/createTable.sql
-\i /opt/db/pxr-binary-manage-service/createTable.sql
-\i /opt/db/pxr-block-proxy-service/createTable.sql
-\i /opt/db/pxr-book-manage-service/createTable.sql
-\i /opt/db/pxr-book-operate-service/createTable.sql
-\i /opt/db/pxr-catalog-service/createTable.sql
-\i /opt/db/pxr-catalog-update-service/createTable.sql
-\i /opt/db/pxr-certificate-manage-service/createTable.sql
-\i /opt/db/pxr-certification-authority-service/createTable.sql
-\i /opt/db/pxr-ctoken-ledger-service/createTable.sql
-\i /opt/db/pxr-identity-verificate-service/createTable.sql
-\i /opt/db/pxr-local-ctoken-service/createTable.sql
-\i /opt/db/pxr-notification-service/createTable.sql
-\i /opt/db/pxr-operator-service/createTable.sql
+\i /opt/database/pxr-access-control-manage-service/createTable.sql
+\i /opt/database/pxr-access-control-service/createTable.sql
+\i /opt/database/pxr-binary-manage-service/createTable.sql
+\i /opt/database/pxr-block-proxy-service/createTable.sql
+\i /opt/database/pxr-book-manage-service/createTable.sql
+\i /opt/database/pxr-book-operate-service/createTable.sql
+\i /opt/database/pxr-catalog-service/createTable.sql
+\i /opt/database/pxr-catalog-update-service/createTable.sql
+\i /opt/database/pxr-certificate-manage-service/createTable.sql
+\i /opt/database/pxr-certification-authority-service/createTable.sql
+\i /opt/database/pxr-ctoken-ledger-service/createTable.sql
+\i /opt/database/pxr-identity-verificate-service/createTable.sql
+\i /opt/database/pxr-local-ctoken-service/createTable.sql
+\i /opt/database/pxr-notification-service/createTable.sql
+\i /opt/database/pxr-operator-service/createTable.sql
 ```
 ```
 GRANT ALL PRIVILEGES ON pxr_access_manage.token_generation_history TO pxr_access_manage_user;
