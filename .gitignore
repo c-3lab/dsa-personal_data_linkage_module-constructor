@@ -3,7 +3,6 @@
 **/logs
 
 cert
-src
 alb-ingress-config
 sql
 

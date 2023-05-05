@@ -1,0 +1,48 @@
+[submodule "src/pxr-ver-1.0"]
+	path = src/pxr-ver-1.0
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-ver-1.0.git
+[submodule "src/pxr-access-control-manage-service"]
+	path = src/pxr-access-control-manage-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-access-control-manage-service.git
+[submodule "src/pxr-access-control-service"]
+	path = src/pxr-access-control-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-access-control-service.git
+[submodule "src/pxr-binary-manage-service"]
+	path = src/pxr-binary-manage-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-binary-manage-service.git
+[submodule "src/pxr-block-proxy-service"]
+	path = src/pxr-block-proxy-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-block-proxy-service.git
+[submodule "src/pxr-book-manage-service"]
+	path = src/pxr-book-manage-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-book-manage-service.git
+[submodule "src/pxr-book-operate-service"]
+	path = src/pxr-book-operate-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-book-operate-service.git
+[submodule "src/pxr-catalog-service"]
+	path = src/pxr-catalog-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-catalog-service.git
+[submodule "src/pxr-catalog-update-service"]
+	path = src/pxr-catalog-update-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-catalog-update-service.git
+[submodule "src/pxr-certificate-manage-service"]
+	path = src/pxr-certificate-manage-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-certificate-manage-service.git
+[submodule "src/pxr-certification-authority-service"]
+	path = src/pxr-certification-authority-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-certification-authority-service.git
+[submodule "src/pxr-ctoken-ledger-service"]
+	path = src/pxr-ctoken-ledger-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-ctoken-ledger-service.git
+[submodule "src/pxr-identity-verificate-service"]
+	path = src/pxr-identity-verificate-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-identity-verificate-service.git
+[submodule "src/pxr-local-ctoken-service"]
+	path = src/pxr-local-ctoken-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-local-ctoken-service.git
+[submodule "src/pxr-notification-service"]
+	path = src/pxr-notification-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-notification-service.git
+[submodule "src/pxr-operator-service"]
+	path = src/pxr-operator-service
+	url = https://github.com/Personal-Data-Linkage-Module/pxr-operator-service.git
