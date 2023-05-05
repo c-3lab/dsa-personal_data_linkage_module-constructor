@@ -9,14 +9,12 @@ CLUSTER_NAME=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME -
 
 SEDi="docker run -i --rm -v $(pwd)/src:/opt/src -w /opt busybox:1.36 sed"
 
-kubectl delete -f alb-ingress-config/alb-ingress-controller.yaml
+helm uninstall aws-load-balancer-controller -n kube-system
 
 eksctl delete iamserviceaccount \
 --region ap-northeast-1 \
 --cluster $CLUSTER_NAME \
---name alb-ingress-controller
-
-kubectl delete -f alb-ingress-config/rbac-role.yaml
+--name aws-load-balancer-controller
 
 eksctl delete fargateprofile \
 --region ap-northeast-1 \
@@ -46,5 +44,5 @@ while :; do
 done
 aws cloudformation wait stack-delete-complete --stack-name eksctl-$CLUSTER_NAME-cluster
 
-aws iam delete-policy --policy-arn "arn:aws:iam::$ACCOUNTID:policy/$CLUSTER_NAME-ingress-policy"
-#
+aws iam delete-policy --policy-arn "arn:aws:iam::$ACCOUNTID:policy/$CLUSTER_NAME-alb-policy"
+
