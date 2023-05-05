@@ -4,6 +4,7 @@ source .env
 
 echo "VPC_STACK_NAME=$VPC_STACK_NAME"
 echo "NAMESPACE=$NAMESPACE"
+echo "EKS_VERSION=$EKS_VERSION"
 
 CLUSTER_NAME=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-EKS-cluster-name'].OutputValue" --output text); echo "CLUSTER_NAME=$CLUSTER_NAME"
 VPCID=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='$VPC_STACK_NAME-vpc'].OutputValue" --output text); echo "VPCID=$VPCID"
@@ -18,7 +19,7 @@ PUBSNID3=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --que
 eksctl create cluster \
 --region ap-northeast-1 \
 --name $CLUSTER_NAME \
---version 1.20 \
+--version $EKS_VERSION \
 --fargate \
 --vpc-private-subnets $PRISNID1,$PRISNID2,$PRISNID3 \
 --vpc-public-subnets $PUBSNID1,$PUBSNID2,$PUBSNID3 \
@@ -46,31 +47,32 @@ eksctl utils associate-iam-oidc-provider \
 --cluster $CLUSTER_NAME \
 --approve
 
-# set up alb-ingress-controller
-mkdir -p ./alb-ingress-config
-curl -o alb-ingress-config/alb-ingress-controller.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.7/docs/examples/alb-ingress-controller.yaml
-curl -o alb-ingress-config/iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.7/docs/examples/iam-policy.json
-curl -o alb-ingress-config/rbac-role.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.7/docs/examples/rbac-role.yaml
+# set up AWS Load Balancer Controller
+mkdir -p ./alb-manifests
+curl -o alb-manifests/iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
 
-SED="docker run --rm -v $(pwd)/alb-ingress-config:/opt/ busybox:1.36 sed"
-
-$SED -i -e "s/            # - --cluster-name=devCluster/            - --cluster-name=$CLUSTER_NAME/" \
-        -e "s/            # - --aws-vpc-id=vpc-xxxxxx/            - --aws-vpc-id=$VPCID/" \
-        -e "s/            # - --aws-region=us-west-1/            - --aws-region=ap-northeast-1/" \
-        /opt/alb-ingress-controller.yaml
-
-POLICYARN=$(aws iam create-policy --policy-name $CLUSTER_NAME-ingress-policy --policy-document file://alb-ingress-config/iam-policy.json --query Policy.Arn --output text);echo "POLICYARN=$POLICYARN"
-
-kubectl apply -f alb-ingress-config/rbac-role.yaml
+POLICYARN=$(aws iam create-policy --policy-name $CLUSTER_NAME-alb-policy --policy-document file://alb-manifests/iam_policy.json --query Policy.Arn --output text);echo "POLICYARN=$POLICYARN"
 
 eksctl create iamserviceaccount \
 --region ap-northeast-1 \
 --cluster $CLUSTER_NAME \
---name alb-ingress-controller \
+--name aws-load-balancer-controller \
 --namespace kube-system \
+--role-name AmazonEKSLoadBalancerControllerRole \
 --attach-policy-arn $POLICYARN \
 --override-existing-serviceaccounts \
 --approve
 
-kubectl apply -f alb-ingress-config/alb-ingress-controller.yaml
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set region=ap-northeast-1 \
+  --set vpcId=$VPCID \
+  --set clusterName=$CLUSTER_NAME \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller
+
+kubectl wait -n kube-system --timeout=90s --for=condition=available deployment/aws-load-balancer-controller
 
