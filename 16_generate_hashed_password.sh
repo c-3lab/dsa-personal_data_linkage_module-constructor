@@ -7,7 +7,7 @@ echo "HASH_SALT=$HASH_SALT"
 echo "HASH_STRETCH_COUNT=$HASH_STRETCH_COUNT"
 
 # generate the Hashed password
-ADMIN_HPASS=$(docker run --rm -v $(pwd)/utils/hashed_password_generator:/opt -w /opt node:12.22.12 node hashed_password_generator.js $ADMIN_PASSWORD $HASH_SALT $HASH_STRETCH_COUNT);echo "ADMIN_HPASS=$ADMIN_HPASS"
+ADMIN_HPASS=$(docker run --rm -v $(pwd)/utils/hashed_password_generator:/opt -w /opt node:12-bullseye node hashed_password_generator.js $ADMIN_PASSWORD $HASH_SALT $HASH_STRETCH_COUNT);echo "ADMIN_HPASS=$ADMIN_HPASS"
 
 # generate insert_admin SQL
 mkdir -p sql
