@@ -2,10 +2,23 @@
 
 This repository contains scripts and CFn Templates to build a personal data linkage platform of DSA onto AWS.
 
-## CAUTION
-**This repository supports the `2022/11/30 version` of the persional data linkage module.**
-
-[パーソナルデータ連携モジュールソースコード(2022/11/30版)　［ZIP・6,324 KB］](https://data-society-alliance.org/wp-content/uploads/2022/11/%E3%83%91%E3%83%BC%E3%82%BD%E3%83%8A%E3%83%AB%E3%83%87%E3%83%BC%E3%82%BF%E9%80%A3%E6%90%BA%E3%83%A2%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB_%E3%82%BD%E3%83%BC%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89.zip)
+## Dependent Repositories
+* [pxr-ver-1.0](https://github.com/Personal-Data-Linkage-Module/pxr-ver-1.0)
+* [pxr-access-control-manage-service](https://github.com/Personal-Data-Linkage-Module/pxr-access-control-manage-service)
+* [pxr-access-control-service](https://github.com/Personal-Data-Linkage-Module/pxr-access-control-service)
+* [pxr-binary-manage-service](https://github.com/Personal-Data-Linkage-Module/pxr-binary-manage-service)
+* [pxr-block-proxy-service](https://github.com/Personal-Data-Linkage-Module/pxr-block-proxy-service)
+* [pxr-book-manage-service](https://github.com/Personal-Data-Linkage-Module/pxr-book-manage-service)
+* [pxr-book-operate-service](https://github.com/Personal-Data-Linkage-Module/pxr-book-operate-service)
+* [pxr-catalog-service](https://github.com/Personal-Data-Linkage-Module/pxr-catalog-service)
+* [pxr-catalog-update-service](https://github.com/Personal-Data-Linkage-Module/pxr-catalog-update-service)
+* [pxr-certificate-manage-service](https://github.com/Personal-Data-Linkage-Module/pxr-certificate-manage-service)
+* [pxr-certification-authority-service](https://github.com/Personal-Data-Linkage-Module/pxr-certification-authority-service)
+* [pxr-ctoken-ledger-service](https://github.com/Personal-Data-Linkage-Module/pxr-ctoken-ledger-service)
+* [pxr-identity-verificate-service](https://github.com/Personal-Data-Linkage-Module/pxr-identity-verificate-service)
+* [pxr-local-ctoken-service](https://github.com/Personal-Data-Linkage-Module/pxr-local-ctoken-service)
+* [pxr-notification-service](https://github.com/Personal-Data-Linkage-Module/pxr-notification-service)
+* [pxr-operator-service](https://github.com/Personal-Data-Linkage-Module/pxr-operator-service)
 
 ## How to use
 ### Preparation
@@ -14,9 +27,10 @@ This repository contains scripts and CFn Templates to build a personal data link
 1. You should make the following tools available:
   * curl
   * openssl
-  * aws cli (>2.9)
-  * eksctl (>0.125)
+  * aws cli (>2.11)
+  * eksctl (>0.139)
   * kubectl (>1.25)
+  * helm (>3.13)
 
 ### Construction
 1. Copy `sample.env` to `.env` and edit its variables to fit your environment.
